@@ -24,8 +24,11 @@ public class Species : MonoBehaviour
     private void Update()
     {
         Move();
-        DetectFood();
-        
+
+        if (FoodDetected == false)
+        {
+            DetectFood();
+        }
     }
 
     void Move()
@@ -33,7 +36,13 @@ public class Species : MonoBehaviour
         CheckBoundry();
         if (FoodDetected == true)
         {
-            transform.Translate(Vector3.MoveTowards(transform.position, NearestFood.transform.position, FoodDetectionRadius) * Movementspeed * SpeciesSpeedMultiplier);
+            Vector3 direction = NearestFood.transform.position - transform.position;
+
+            var rotation = Quaternion.LookRotation(direction);
+            transform.rotation = rotation;
+
+            transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplier);
+
             if (NearestFood.transform.position == transform.position)
             {
                 Eat();
@@ -55,17 +64,20 @@ public class Species : MonoBehaviour
 
     void DetectFood()
     {
-        GameObject[] FoodAvailabal = GameObject.FindGameObjectsWithTag(FoodType);
-
-        for (int i = 0; i < FoodAvailabal.Length; i++)
+        if(FoodDetected == false)
         {
-            float DistanceCheck = Vector3.Distance(transform.position, FoodAvailabal[i].transform.position);
+            GameObject[] FoodAvailabal = GameObject.FindGameObjectsWithTag(FoodType);
 
-            if (DistanceCheck < FoodDetectionRadius)
+            for (int i = 0; i < FoodAvailabal.Length; i++)
             {
-                NearestFood = FoodAvailabal[i];
-                FoodDetected = true;
-                break;
+                float DistanceCheck = Vector3.Distance(transform.position, FoodAvailabal[i].transform.position);
+
+                if (DistanceCheck < FoodDetectionRadius)
+                {
+                    NearestFood = FoodAvailabal[i];
+                    FoodDetected = true;
+                    break;
+                }
             }
         }
     }
