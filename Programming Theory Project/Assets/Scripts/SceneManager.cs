@@ -6,12 +6,15 @@ using UnityEngine;
 public class SceneManager : MonoBehaviour
 {
     public int SpeciesCount;
+    [Range(0,1)]
+    public float PredatorPercentage;
     public int GrasCount;
 
     private Vector3 SpawnPosition;
     private Quaternion SpawnRotation;
 
-    public Species species;
+    public Species Prey;
+    public Species Predator;
     public GameObject Gras;
 
     void Start()
@@ -22,11 +25,21 @@ public class SceneManager : MonoBehaviour
 
     void SpawnSpecies()
     {
-        for (int i = 0; i < SpeciesCount; i++)
+        int PredatorAmount = Convert.ToInt32(SpeciesCount * PredatorPercentage);
+        for (int i = 0; i < SpeciesCount - PredatorAmount; i++)
         {
             SpawnPosition = new Vector3(UnityEngine.Random.Range(-4.5f, 4.5f), 0.26f, UnityEngine.Random.Range(-4.5f, 4.5f));
             SpawnRotation.eulerAngles = new Vector3(0, UnityEngine.Random.Range(0, 359), 0);
-            Instantiate(species, SpawnPosition, SpawnRotation);
+            Instantiate(Prey, SpawnPosition, SpawnRotation);
+            
+        }
+
+        for (int i = 0; i < PredatorAmount; i++)
+        {
+            SpawnPosition = new Vector3(UnityEngine.Random.Range(-4.5f, 4.5f), 0.26f, UnityEngine.Random.Range(-4.5f, 4.5f));
+            SpawnRotation.eulerAngles = new Vector3(0, UnityEngine.Random.Range(0, 359), 0);
+            Instantiate(Predator, SpawnPosition, SpawnRotation);
+
         }
     }
 

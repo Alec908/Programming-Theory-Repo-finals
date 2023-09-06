@@ -6,55 +6,31 @@ using UnityEngine;
 
 public class Species : MonoBehaviour
 {
-    private Color SpeciesColor { get; set; }
-    private int EnergyToBeFed { get; set; }
-    private float SpeciesSpeedMultiplier { get; set; } = 1;
-    private float FoodDetectionRadius { get; set; } = 1;
-    private string FoodType { get; set; } = "Gras";
+    private float SpeciesSpeedMultiplier;
+    private float FoodDetectionRadius;
 
-    private float Movementspeed = 0.005f;
-    private GameObject NearestFood;
+    protected float Movementspeed = 0.005f;
+    protected GameObject NearestFood;
     private bool FoodDetected = false;
 
-    private void Start()
-    {
-        gameObject.GetComponent<Renderer>().material.color = SpeciesColor;
-    }
 
-    private void Update()
-    {
-        Move();
-
-        if (FoodDetected == false)
-        {
-            DetectFood();
-        }
-    }
-
-    void Move()
+    protected virtual void Move()
     {
         CheckBoundry();
-        if (FoodDetected == true)
-        {
-            Vector3 direction = NearestFood.transform.position - transform.position;
-
-            var rotation = Quaternion.LookRotation(direction);
-            transform.rotation = rotation;
-
-            transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplier);
-
-            if (NearestFood.transform.position == transform.position)
-            {
-                Eat();
-            }
-        }
-        else
-        {
-            transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplier);
-        }
+        transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplier);
     }
 
-    void CheckBoundry()
+    protected void MoveToFood()
+    {
+        Vector3 direction = NearestFood.transform.position - transform.position;
+
+        var rotation = Quaternion.LookRotation(direction);
+        transform.rotation = rotation;
+
+        transform.Translate(Vector3.forward * Movementspeed);
+    }
+
+    protected void CheckBoundry()
     {
         if (transform.position.x < -4.8f || transform.position.x > 4.8f || transform.position.z < -4.8f || transform.position.z > 4.8f)
         {
@@ -62,28 +38,40 @@ public class Species : MonoBehaviour
         }
     }
 
-    void DetectFood()
+    protected void SetColor(Color color)
     {
-        if(FoodDetected == false)
-        {
-            GameObject[] FoodAvailabal = GameObject.FindGameObjectsWithTag(FoodType);
-
-            for (int i = 0; i < FoodAvailabal.Length; i++)
-            {
-                float DistanceCheck = Vector3.Distance(transform.position, FoodAvailabal[i].transform.position);
-
-                if (DistanceCheck < FoodDetectionRadius)
-                {
-                    NearestFood = FoodAvailabal[i];
-                    FoodDetected = true;
-                    break;
-                }
-            }
-        }
+        gameObject.GetComponent<Renderer>().material.color = color;
     }
 
-    void Eat()
+    protected GameObject DetectFood(string FoodTag)
     {
+        GameObject[] FoodAvailabal = GameObject.FindGameObjectsWithTag(FoodTag);
 
+        for (int i = 0; i < FoodAvailabal.Length; i++)
+        {
+            float DistanceCheck = Vector3.Distance(transform.position, FoodAvailabal[i].transform.position);
+
+            if (DistanceCheck < FoodDetectionRadius)
+            {
+                NearestFood = FoodAvailabal[i];
+                break;
+            }
+        }
+        return NearestFood;
+    }
+
+    void Eat(int EnergyToBeFed, int FoodEnergyValue)
+    {
+        Destroy(NearestFood);
+        EnergyToBeFed += FoodEnergyValue;
+    }
+
+    protected bool CheckIfHungry(int CurrentEnergy, int EnergyToBeFed)
+    {
+        if (CurrentEnergy > EnergyToBeFed) 
+        { 
+            return false;
+        }
+        return true;
     }
 }
