@@ -6,23 +6,21 @@ using UnityEngine;
 
 public class Species : MonoBehaviour
 {
-    private float SpeciesSpeedMultiplier;
 
     protected float Movementspeed = 0.005f;
-    protected GameObject NearestFood;
 
     protected int FoodEnergyGras = 10;
     protected int FoodEnergyFlesh = 50;
 
-    protected virtual void Move()
+    protected virtual void Move(float SpeciesSpeedMultiplier)
     {
         CheckBoundry();
         transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplier);
     }
 
-    protected virtual void MoveToFood()
+    protected virtual void MoveToFood(GameObject NearestFood, Vector3 position)
     {
-        Vector3 direction = NearestFood.transform.position - transform.position;
+        Vector3 direction = new Vector3(NearestFood.transform.position.x - transform.position.x, 0, NearestFood.transform.position.z - transform.position.z);
 
         var rotation = Quaternion.LookRotation(direction);
         transform.rotation = rotation;
@@ -43,7 +41,7 @@ public class Species : MonoBehaviour
         gameObject.GetComponent<Renderer>().material.color = color;
     }
 
-    protected virtual void DetectFood(string FoodTag, float FoodDetectionRadius)
+    protected virtual GameObject DetectFood(string FoodTag, float FoodDetectionRadius)
     {
         GameObject[] FoodAvailabal = GameObject.FindGameObjectsWithTag(FoodTag);
 
@@ -53,10 +51,11 @@ public class Species : MonoBehaviour
 
             if (DistanceCheck < FoodDetectionRadius)
             {
-                NearestFood = FoodAvailabal[i];
-                break;
+                GameObject NearestFood = FoodAvailabal[i];
+                return NearestFood;
             }
         }
+        return null;
     }
 
     protected int Eat(int CurrentEnergy, int EnergyToBeFed, int FoodEnergyValue, GameObject FoodObject)
@@ -68,7 +67,7 @@ public class Species : MonoBehaviour
 
     protected bool CheckIfHungry(int CurrentEnergy, int EnergyToBeFed)
     {
-        if (CurrentEnergy > EnergyToBeFed) 
+        if (CurrentEnergy >= EnergyToBeFed) 
         { 
             return false;
         }

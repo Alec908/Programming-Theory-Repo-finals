@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -18,6 +19,7 @@ public class Prey : Species
     //Status
     private bool Hungry  = true;
     private bool FoodDetected = false;
+    public bool BeingEaten = false;
     private int CurrentEnergyLevel = 0;
     private float DistanceCheck = Mathf.Infinity;
     
@@ -30,47 +32,24 @@ public class Prey : Species
 
     private void Update()
     {
-        Hungry = base.CheckIfHungry(CurrentEnergyLevel, EnergyToBeFed);
-        if (Hungry == true && MyFood != null)
+        if (BeingEaten == false)
         {
-            MoveToFood();
-        }
-        else
-        {
-            Move();
-            DetectFood(FoodType,FoodDetectionRadius);
-        }
-        CurrentEnergyLevel = base.Hunger(CurrentEnergyLevel);
-        Debug.Log($"Energy: {CurrentEnergyLevel}, Food:{MyFood}");
-    }
-
-    protected override void Move()
-    {
-        base.CheckBoundry();
-        transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplicator);
-    }
-
-    protected override void MoveToFood()
-    {
-        if (DistanceCheck < 1)
-        {
-            CurrentEnergyLevel = base.Eat(CurrentEnergyLevel, EnergyToBeFed, FoodEnergyGras, MyFood);
-        }
-    }
-
-    protected override void DetectFood(string FoodTag, float FoodDetectionRadius)
-    {
-        GameObject[] FoodAvailabal = GameObject.FindGameObjectsWithTag(FoodTag);
-
-        for (int i = 0; i < FoodAvailabal.Length; i++)
-        {
-            DistanceCheck = Vector3.Distance(transform.position, FoodAvailabal[i].transform.position);
-
-            if (DistanceCheck < FoodDetectionRadius)
+            Hungry = base.CheckIfHungry(CurrentEnergyLevel, EnergyToBeFed);
+            if (Hungry == true && MyFood != null)
             {
-                MyFood = FoodAvailabal[i];
-                break;
+                base.MoveToFood(MyFood, transform.position);
+                if (Mathf.Abs(MyFood.transform.position.x - transform.position.x) <= 0.2)
+                {
+                    CurrentEnergyLevel = base.Eat(CurrentEnergyLevel, EnergyToBeFed, FoodEnergyGras, MyFood);
+                }
             }
+            else
+            {
+                base.Move(SpeciesSpeedMultiplicator);
+                MyFood = base.DetectFood(FoodType,FoodDetectionRadius);
+            }
+            CurrentEnergyLevel = base.Hunger(CurrentEnergyLevel);
         }
+        
     }
 }
