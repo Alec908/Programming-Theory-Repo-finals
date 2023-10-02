@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-public class Predator : Species
+public class Predator : Species // INHERITANCE
 {
     //Species characteristics
 
@@ -32,22 +32,28 @@ public class Predator : Species
 
     private void Update()
     {
-        Hungry = base.CheckIfHungry(CurrentEnergyLevel, EnergyToBeFed);
+        Hungry = base.CheckIfHungry(CurrentEnergyLevel, EnergyToBeFed); // ABSTRACTION
         if (Hungry == true && MyFood != null)
         {
-            base.MoveToFood(MyFood, transform.position);
+            base.MoveToFood(MyFood, transform.position); // ABSTRACTION
             if (Mathf.Abs(MyFood.transform.position.x - transform.position.x) <= 0.2)
             {
-                MyFood.GetComponentInChildren<Prey>().BeingEaten = true;
-                CurrentEnergyLevel = base.Eat(CurrentEnergyLevel, EnergyToBeFed, FoodEnergyFlesh, MyFood);
-                Debug.Log($"Hunted! {CurrentEnergyLevel}");
+                CurrentEnergyLevel = Eat(CurrentEnergyLevel, EnergyToBeFed, FoodEnergy = 50, MyFood);
             }
         }
         else
         {
-            base.Move(SpeciesSpeedMultiplicator);
-            MyFood = base.DetectFood(FoodType, FoodDetectionRadius);
+            base.Move(SpeciesSpeedMultiplicator); // ABSTRACTION
+            MyFood = base.DetectFood(FoodType, FoodDetectionRadius); // ABSTRACTION
         }
-        CurrentEnergyLevel = base.Hunger(CurrentEnergyLevel);
+        CurrentEnergyLevel = base.Hunger(CurrentEnergyLevel); // ABSTRACTION
+    }
+    
+    protected override int Eat(int CurrentEnergy, int EnergyToBeFed, int FoodEnergyValue, GameObject FoodObject) //POLYMORPHISM
+    {
+        MyFood.GetComponentInChildren<Prey>().BeingEaten = true;
+        Destroy(FoodObject);
+        CurrentEnergy += FoodEnergyValue;
+        return CurrentEnergy;
     }
 }

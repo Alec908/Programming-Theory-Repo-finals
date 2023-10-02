@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-public class Prey : Species
+public class Prey : Species // INHERITANCE
 {
     //Species characteristics
 
@@ -34,21 +34,21 @@ public class Prey : Species
     {
         if (BeingEaten == false)
         {
-            Hungry = base.CheckIfHungry(CurrentEnergyLevel, EnergyToBeFed);
+            Hungry = base.CheckIfHungry(CurrentEnergyLevel, EnergyToBeFed); // ABSTRACTION
             if (Hungry == true && MyFood != null)
             {
-                base.MoveToFood(MyFood, transform.position);
+                base.MoveToFood(MyFood, transform.position); // ABSTRACTION
                 if (Mathf.Abs(MyFood.transform.position.x - transform.position.x) <= 0.2)
                 {
-                    CurrentEnergyLevel = base.Eat(CurrentEnergyLevel, EnergyToBeFed, FoodEnergyGras, MyFood);
+                    CurrentEnergyLevel = base.Eat(CurrentEnergyLevel, EnergyToBeFed, FoodEnergy = 10, MyFood); // ABSTRACTION
                 }
             }
             else
             {
-                base.Move(SpeciesSpeedMultiplicator);
-                MyFood = base.DetectFood(FoodType,FoodDetectionRadius);
+                base.Move(SpeciesSpeedMultiplicator); // ABSTRACTION
+                MyFood = base.DetectFood(FoodType,FoodDetectionRadius); // ABSTRACTION
             }
-            CurrentEnergyLevel = base.Hunger(CurrentEnergyLevel);
+            CurrentEnergyLevel = base.Hunger(CurrentEnergyLevel); // ABSTRACTION
         }
         
     }

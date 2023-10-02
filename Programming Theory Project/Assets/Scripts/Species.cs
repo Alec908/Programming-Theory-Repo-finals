@@ -9,12 +9,11 @@ public class Species : MonoBehaviour
 
     protected float Movementspeed = 0.005f;
 
-    protected int FoodEnergyGras = 10;
-    protected int FoodEnergyFlesh = 50;
+    protected int FoodEnergy { get; set; } // ENCAPSULATION
 
     protected virtual void Move(float SpeciesSpeedMultiplier)
     {
-        CheckBoundry();
+        CheckBoundry(); // ABSTRACTION
         transform.Translate(Vector3.forward * Movementspeed * SpeciesSpeedMultiplier);
     }
 
@@ -58,7 +57,7 @@ public class Species : MonoBehaviour
         return null;
     }
 
-    protected int Eat(int CurrentEnergy, int EnergyToBeFed, int FoodEnergyValue, GameObject FoodObject)
+    protected virtual int Eat(int CurrentEnergy, int EnergyToBeFed, int FoodEnergyValue, GameObject FoodObject)
     {
         Destroy(FoodObject);
         CurrentEnergy += FoodEnergyValue;
